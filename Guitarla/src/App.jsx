@@ -1,7 +1,8 @@
 import Header from "./components/Header"
 import Guitar from "./components/Guitar"
+import Footer from "./components/Footer";
 import { db } from "./data/db";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function App() {
 
@@ -9,14 +10,26 @@ function App() {
   // const [total, setTotal] = useState(0);
   // const [cart, setCart] = useState([])
   
+
+  // Usar cuando hay efectos secundarios cuando un state cambia
   // const useEffect(() => {
   //   console.log('algo')
   // }, [dependencias])
+
+  const initialCart = () => {
+    const localStorageCart = localStorage.getItem('cart')
+    return localStorageCart ? JSON.parse(localStorageCart) : []
+  }
   
   const [data,setData] = useState(db)
-  const [cart,setCart] = useState([])
+  const [cart,setCart] = useState(initialCart)
   const MAX_ITEMS = 5
   const MIN_ITEMS = 1
+
+  useEffect(()=>{
+    localStorage.setItem('cart',JSON.stringify(cart))
+  },[cart])
+
 
   function addToCart(item){
 
@@ -34,7 +47,6 @@ function App() {
 
   function removeFromCart(id){
     setCart(prevCart => prevCart.filter( guitar => guitar.id !== id))
-    console.log('Eliminar elemento cart...',id)
   }
 
   function increaseQuantity(id){
@@ -67,6 +79,7 @@ function App() {
     setCart([])
   }
 
+
   return (
     <>
       <Header 
@@ -91,13 +104,7 @@ function App() {
           })}
         </div>
       </main>
-
-
-      <footer className="bg-dark mt-5 py-5">
-        <div className="container-xl">
-          <p className="text-white text-center fs-4 mt-4 m-md-0">GuitarLA - Todos los derechos Reservados</p>
-        </div>
-      </footer>
+      <Footer/>
     </>
   )
 }
